@@ -1,16 +1,17 @@
-import { Module } from "@nestjs/common";
+import { Module, forwardRef } from "@nestjs/common";
 import { JwtModule } from "@nestjs/jwt";
 import { PassportModule } from "@nestjs/passport";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { AuthController } from "./presentation/controllers/auth.controller";
 import { LoginUseCase } from "./application/use-cases/login.use-case";
-import { JwtTokenServiceImpl } from "./infrastructure/jwt-token.service";
+import { AuthService } from "./infrastructure/auth.service";
 import { JwtStrategy } from "./infrastructure/jwt.strategy";
+import { GoogleStrategy } from "./infrastructure/google.strategy";
 import { UsersModule } from "../users/users.module";
 
 @Module({
   imports: [
-    UsersModule,
+    forwardRef(() => UsersModule),
     PassportModule.register({ defaultStrategy: "jwt" }),
     JwtModule.registerAsync({
       global: true,
@@ -23,14 +24,7 @@ import { UsersModule } from "../users/users.module";
     }),
   ],
   controllers: [AuthController],
-  providers: [
-    LoginUseCase,
-    {
-      provide: "ITokenService",
-      useClass: JwtTokenServiceImpl,
-    },
-    JwtStrategy,
-  ],
-  exports: [JwtModule, PassportModule],
+  providers: [LoginUseCase, AuthService, JwtStrategy, GoogleStrategy],
+  exports: [JwtModule, PassportModule, AuthService],
 })
 export class AuthModule {}

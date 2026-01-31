@@ -2,6 +2,7 @@ import { Injectable, Inject, ConflictException } from "@nestjs/common";
 import { IUseCase } from "@shared/interfaces";
 import type { IUserRepository } from "../../application/interfaces/user.repository.interface";
 import { User, UserRole } from "../../domain/user.model";
+import { AuthService } from "@modules/auth/infrastructure/auth.service";
 
 export interface CreateUserRequest {
   email: string;
@@ -14,6 +15,7 @@ export class CreateUserUseCase implements IUseCase<CreateUserRequest, User> {
   constructor(
     @Inject("IUserRepository")
     private readonly userRepository: IUserRepository,
+    private readonly authService: AuthService,
   ) {}
 
   async execute(request: CreateUserRequest): Promise<User> {
@@ -22,9 +24,13 @@ export class CreateUserUseCase implements IUseCase<CreateUserRequest, User> {
       throw new ConflictException("User with this email already exists");
     }
 
+    const passwordHash = await this.authService.hashPassword(
+      request.password ?? "password",
+    );
+
     const user = new User({
       email: request.email,
-      passwordHash: request.password || "password", // In a real app, hash this!
+      passwordHash,
       role: request.role,
     });
 

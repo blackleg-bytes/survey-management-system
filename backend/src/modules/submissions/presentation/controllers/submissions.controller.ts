@@ -14,11 +14,7 @@ import { TrimPipe } from "@shared/pipes";
 import { ApiTags, ApiBearerAuth, ApiOperation } from "@nestjs/swagger";
 import { SubmitSurveyUseCase } from "../../application/use-cases/submit-survey.use-case";
 import { GetSubmissionsUseCase } from "../../application/use-cases/get-submissions.use-case";
-import {
-  JwtAuthGuard,
-  RolesGuard,
-  Roles,
-} from "@shared/guards";
+import { JwtAuthGuard, RolesGuard, Roles } from "@shared/guards";
 import { UserRole } from "@modules/users/domain/user.model";
 import type { AuthenticatedRequest } from "@shared/interfaces";
 import { SubmitSurveyDto } from "../dtos/submit-survey.dto";

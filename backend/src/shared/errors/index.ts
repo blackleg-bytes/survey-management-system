@@ -32,5 +32,3 @@ export class UnauthorizedError extends DomainError {
     this.name = "UnauthorizedError";
   }
 }
-
-

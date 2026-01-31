@@ -16,6 +16,17 @@ export const envSchema = z.object({
 
   JWT_SECRET: z.string().min(1),
 
+  ACCESS_TOKEN_TTL: z.coerce.number().default(900), // seconds (15m)
+  REFRESH_TOKEN_TTL_DAYS: z.coerce.number().default(7),
+
+  REDIS_HOST: z.string().default("localhost"),
+  REDIS_PORT: z.coerce.number().default(6379),
+  REDIS_PASSWORD: z.string().optional(),
+
+  GOOGLE_CLIENT_ID: z.string().min(1),
+  GOOGLE_CLIENT_SECRET: z.string().min(1),
+  GOOGLE_CALLBACK_URL: z.string().min(1),
+
   // 🗃️ Database
   DATABASE_URL: z.string().min(1),
 });

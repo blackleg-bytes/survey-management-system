@@ -1,7 +1,7 @@
 import { Injectable, Inject, UnauthorizedException } from "@nestjs/common";
 import { IUseCase } from "../../../../shared/interfaces";
 import type { IUserRepository } from "@modules/users/application/interfaces/user.repository.interface";
-import type { ITokenService } from "../interfaces";
+import { AuthService } from "@modules/auth/infrastructure/auth.service";
 import { UserRole } from "@modules/users/domain/user.model";
 
 export interface LoginRequest {
@@ -11,6 +11,7 @@ export interface LoginRequest {
 
 export interface LoginResponse {
   accessToken: string;
+  refreshToken: string;
   role: UserRole;
 }
 
@@ -18,7 +19,7 @@ export interface LoginResponse {
 export class LoginUseCase implements IUseCase<LoginRequest, LoginResponse> {
   constructor(
     @Inject("IUserRepository") private readonly userRepository: IUserRepository,
-    @Inject("ITokenService") private readonly tokenService: ITokenService,
+    private readonly authService: AuthService,
   ) {}
 
   async execute(request: LoginRequest): Promise<LoginResponse> {
@@ -27,15 +28,22 @@ export class LoginUseCase implements IUseCase<LoginRequest, LoginResponse> {
       throw new UnauthorizedException("Invalid credentials");
     }
 
-    // TODO: Verify password hash logic here. For simplicity/mock seed, we might trust specific logic or verify
-    // const isPasswordValid = verify(request.password, user.passwordHash);
-    // if (!isPasswordValid) throw ...
+    const isPasswordValid = await this.authService.verifyPassword(
+      request.password ?? "",
+      user.passwordHash,
+    );
+
+    if (!isPasswordValid) {
+      throw new UnauthorizedException("Invalid credentials");
+    }
 
     const payload = { sub: user.id, email: user.email, role: user.role };
-    const accessToken = this.tokenService.signToken(payload);
+    const accessToken = this.authService.signAccessToken(payload);
+    const refreshToken = await this.authService.generateRefreshToken(user.id);
 
     return {
       accessToken,
+      refreshToken,
       role: user.role,
     };
   }

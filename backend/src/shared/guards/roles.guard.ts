@@ -5,7 +5,6 @@ import { Roles, ROLES_KEY } from "../decorators/roles.decorator";
 
 export { Roles, ROLES_KEY };
 
-
 @Injectable()
 export class RolesGuard implements CanActivate {
   constructor(private reflector: Reflector) {}

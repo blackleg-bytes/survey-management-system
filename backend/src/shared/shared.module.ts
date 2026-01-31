@@ -1,5 +1,10 @@
 import { Global, Module } from "@nestjs/common";
-import { AppLogger, TransactionManagerService } from "./services";
+import {
+  AppLogger,
+  TransactionManagerService,
+  RedisService,
+  PasswordService,
+} from "./services";
 import { TransactionInterceptor } from "./interceptors";
 
 @Global()
@@ -8,11 +13,15 @@ import { TransactionInterceptor } from "./interceptors";
     AppLogger,
     TransactionManagerService,
     TransactionInterceptor,
+    RedisService,
+    PasswordService,
   ],
   exports: [
     AppLogger,
     TransactionManagerService,
     TransactionInterceptor,
+    RedisService,
+    PasswordService,
   ],
 })
 export class SharedModule {}

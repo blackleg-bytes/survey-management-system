@@ -1,13 +1,17 @@
-import { Module } from "@nestjs/common";
+import { Module, forwardRef } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { UserEntity } from "../../infrastructure/database/entities/user.entity";
 import { TypeOrmUserRepository } from "./infrastructure/repositories/user.repository";
 import { UsersController } from "./presentation/controllers/users.controller";
 import { CreateUserUseCase } from "./application/use-cases/create-user.use-case";
 import { GetUsersUseCase } from "./application/use-cases/get-users.use-case";
+import { AuthModule } from "../auth/auth.module";
 
 @Module({
-  imports: [TypeOrmModule.forFeature([UserEntity])],
+  imports: [
+    TypeOrmModule.forFeature([UserEntity]),
+    forwardRef(() => AuthModule),
+  ],
   controllers: [UsersController],
   providers: [
     CreateUserUseCase,
@@ -20,4 +24,3 @@ import { GetUsersUseCase } from "./application/use-cases/get-users.use-case";
   exports: ["IUserRepository", TypeOrmModule],
 })
 export class UsersModule {}
-

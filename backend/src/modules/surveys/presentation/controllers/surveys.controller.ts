@@ -3,7 +3,6 @@ import {
   Post,
   Get,
   Body,
-  Req,
   UseGuards,
   HttpStatus,
   HttpCode,
@@ -14,7 +13,8 @@ import { CreateSurveyUseCase } from "../../application/use-cases/create-survey.u
 import { GetSurveysUseCase } from "../../application/use-cases/get-surveys.use-case";
 import { JwtAuthGuard, RolesGuard, Roles } from "@shared/guards";
 import { UserRole } from "@modules/users/domain/user.model";
-import type { AuthenticatedRequest } from "@shared/interfaces";
+import { CurrentUser } from "@shared/decorators";
+import type { AuthenticatedUser } from "@shared/interfaces";
 import { CreateSurveyDto } from "../dtos/create-survey.dto";
 
 import { Transactional } from "@shared/decorators";
@@ -36,22 +36,22 @@ export class SurveysController {
   @ApiOperation({ summary: "Create a new survey (Admin only)" })
   async create(
     @Body(new TrimPipe()) dto: CreateSurveyDto,
-    @Req() req: AuthenticatedRequest,
+    @CurrentUser() user: AuthenticatedUser,
   ) {
     return this.createSurveyUseCase.execute({
       title: dto.title,
       description: dto.description,
       fields: dto.fields,
-      createdBy: req.user.sub,
+      createdBy: user.sub,
     });
   }
   @Get()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "Get list of surveys" })
-  async getAll(@Req() req: AuthenticatedRequest) {
+  async getAll(@CurrentUser() user: AuthenticatedUser) {
     return this.getSurveysUseCase.execute({
-      isAdmin: req.user?.role === UserRole.ADMIN,
-      creatorId: req.user.sub,
+      isAdmin: user?.role === UserRole.ADMIN,
+      creatorId: user.sub,
     });
   }
 }

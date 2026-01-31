@@ -14,6 +14,8 @@ export const envSchema = z.object({
     .default("http://localhost:3000")
     .transform((val) => val.split(",").map((v) => v.trim())),
 
+  JWT_SECRET: z.string().min(1),
+
   // 🗃️ Database
   DATABASE_URL: z.string().min(1),
 });

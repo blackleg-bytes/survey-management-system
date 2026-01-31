@@ -46,7 +46,7 @@ export class SubmissionsController {
   ) {
     return this.submitSurveyUseCase.execute({
       surveyId,
-      officerId: req.user.id,
+      officerId: req.user.sub,
       answers: dto.answers,
     });
   }

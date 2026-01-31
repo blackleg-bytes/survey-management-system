@@ -1,18 +1,21 @@
 import { Module } from "@nestjs/common";
 import { JwtModule } from "@nestjs/jwt";
+import { PassportModule } from "@nestjs/passport";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { AuthController } from "./presentation/controllers/auth.controller";
 import { LoginUseCase } from "./application/use-cases/login.use-case";
 import { JwtTokenServiceImpl } from "./infrastructure/jwt-token.service";
+import { JwtStrategy } from "./infrastructure/jwt.strategy";
 import { UsersModule } from "../users/users.module";
 
 @Module({
   imports: [
     UsersModule,
+    PassportModule.register({ defaultStrategy: "jwt" }),
     JwtModule.registerAsync({
       global: true,
       imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
+      useFactory: (configService: ConfigService) => ({
         secret: configService.get<string>("JWT_SECRET") || "secret",
         signOptions: { expiresIn: "1d" },
       }),
@@ -26,7 +29,8 @@ import { UsersModule } from "../users/users.module";
       provide: "ITokenService",
       useClass: JwtTokenServiceImpl,
     },
+    JwtStrategy,
   ],
-  exports: [JwtModule], // Export JwtModule so Guards in other modules can use JwtService
+  exports: [JwtModule, PassportModule],
 })
 export class AuthModule {}

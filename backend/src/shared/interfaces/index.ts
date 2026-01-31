@@ -23,9 +23,9 @@ export interface IUseCase<TRequest, TResponse> {
 }
 
 export interface AuthenticatedUser {
-  id: string;
+  sub: string;
   email: string;
-  role: string | any; // Using any for flexibility or defined UserRole
+  role: string;
 }
 
 export interface AuthenticatedRequest {

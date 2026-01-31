@@ -1,14 +1,14 @@
-import { registerAs } from '@nestjs/config';
+import { registerAs } from "@nestjs/config";
 
-export default registerAs('database', () => ({
-  type: 'postgres',
+export default registerAs("database", () => ({
+  type: "postgres",
   url: process.env.DATABASE_URL,
   autoLoadEntities: true,
 
   // Migrations configuration
-  migrations: ['dist/migrations/*.js'],
-  migrationsTableName: 'migrations',
-  migrationsRun: process.env.NODE_ENV === 'production', // Auto-run in production
+  migrations: ["dist/migrations/*.js"],
+  migrationsTableName: "migrations",
+  migrationsRun: process.env.NODE_ENV === "production", // Auto-run in production
 
   // ⛔ DO NOT decide synchronize here - handled in app.module.ts
   synchronize: false,
@@ -20,5 +20,5 @@ export default registerAs('database', () => ({
   },
 
   // Logging (only in development)
-  logging: process.env.NODE_ENV === 'development',
+  logging: process.env.NODE_ENV === "development",
 }));

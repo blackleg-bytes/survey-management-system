@@ -14,6 +14,7 @@ import { appConfig, databaseConfig, validateEnv } from "@config";
 // import { UserModule } from '@modules/user/user.module';
 // import { CacheModule } from '@modules/cache/cache.module';
 import { AuthModule } from "./modules/auth/auth.module";
+import { UsersModule } from "./modules/users/users.module";
 import { SurveysModule } from "./modules/surveys/surveys.module";
 import { SubmissionsModule } from "./modules/submissions/submissions.module";
 
@@ -25,9 +26,7 @@ import {
   TimeoutInterceptor,
   HttpLoggingInterceptor,
   TransformInterceptor,
-  TransactionInterceptor,
-  AppLogger,
-  TransactionManagerService,
+  SharedModule,
 } from "@shared";
 
 import { AppController } from "./app.controller";
@@ -56,11 +55,9 @@ import { ZodExceptionFilter } from "@shared/filters/zod-exception.filter";
         const dbConfig =
           configService.getOrThrow<TypeOrmModuleOptions>("database");
 
-        const isDev = configService.get<boolean>("app.isDev");
-
         return {
           ...dbConfig,
-          synchronize: isDev,
+          synchronize: false, // Use migrations instead of synchronize
         };
       },
     }),
@@ -69,16 +66,15 @@ import { ZodExceptionFilter } from "@shared/filters/zod-exception.filter";
     // ChatModule,
     // UserModule,
     // CacheModule,
+    SharedModule,
+    UsersModule,
     AuthModule,
     SurveysModule,
     SubmissionsModule,
   ],
 
   providers: [
-    AppLogger,
     AppService,
-    TransactionManagerService,
-    TransactionInterceptor,
 
     // ===== Global Filters (Order matters: Specific -> Generic) =====
     // { provide: APP_FILTER, useClass: ZodExceptionFilter }, // 1. Catch validation errors first

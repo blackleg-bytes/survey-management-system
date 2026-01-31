@@ -1,7 +1,8 @@
 import { Injectable, Inject, UnauthorizedException } from "@nestjs/common";
 import { IUseCase } from "../../../../shared/interfaces";
-import type { IUserRepository, ITokenService } from "../interfaces";
-import { UserRole } from "../../domain/user.model";
+import type { IUserRepository } from "@modules/users/application/interfaces/user.repository.interface";
+import type { ITokenService } from "../interfaces";
+import { UserRole } from "@modules/users/domain/user.model";
 
 export interface LoginRequest {
   email: string;

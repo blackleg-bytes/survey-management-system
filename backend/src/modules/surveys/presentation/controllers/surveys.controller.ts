@@ -17,9 +17,11 @@ import {
   RolesGuard,
   Roles,
 } from "@shared/guards";
-import { UserRole } from "@modules/auth/domain/user.model";
+import { UserRole } from "@modules/users/domain/user.model";
 import type { AuthenticatedRequest } from "@shared/interfaces";
 import { CreateSurveyDto } from "../dtos/create-survey.dto";
+
+import { Transactional } from "@shared/decorators";
 
 @ApiTags("Surveys")
 @ApiBearerAuth()
@@ -33,6 +35,7 @@ export class SurveysController {
 
   @Post()
   @Roles(UserRole.ADMIN)
+  @Transactional()
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: "Create a new survey (Admin only)" })
   async create(@Body(new TrimPipe()) dto: CreateSurveyDto, @Req() req: AuthenticatedRequest) {

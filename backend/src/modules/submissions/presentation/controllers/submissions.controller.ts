@@ -19,9 +19,11 @@ import {
   RolesGuard,
   Roles,
 } from "@shared/guards";
-import { UserRole } from "@modules/auth/domain/user.model";
+import { UserRole } from "@modules/users/domain/user.model";
 import type { AuthenticatedRequest } from "@shared/interfaces";
 import { SubmitSurveyDto } from "../dtos/submit-survey.dto";
+
+import { Transactional } from "@shared/decorators";
 
 @ApiTags("Submissions")
 @ApiBearerAuth()
@@ -34,6 +36,7 @@ export class SubmissionsController {
   ) {}
 
   @Post()
+  @Transactional()
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: "Submit a survey" })
   async submit(

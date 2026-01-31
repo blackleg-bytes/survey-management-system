@@ -1,5 +1,4 @@
 import { Injectable } from "@nestjs/common";
-import { DataSource, Repository } from "typeorm";
 import { ISubmissionRepository } from "../../application/interfaces";
 import { SurveySubmission, SurveyAnswer } from "../../domain/submission.model";
 import {
@@ -7,22 +6,24 @@ import {
   SurveyAnswerEntity,
 } from "../../../../infrastructure/database/entities/submission.entity";
 
+import { TransactionManagerService } from "@shared/services";
+
 @Injectable()
 export class TypeOrmSubmissionRepository implements ISubmissionRepository {
-  private readonly repository: Repository<SurveySubmissionEntity>;
+  constructor(private readonly txManager: TransactionManagerService) {}
 
-  constructor(private readonly dataSource: DataSource) {
-    this.repository = this.dataSource.getRepository(SurveySubmissionEntity);
+  private get repo() {
+    return this.txManager.getManager().getRepository(SurveySubmissionEntity);
   }
 
   async save(submission: SurveySubmission): Promise<SurveySubmission> {
     const entity = this.toPersistence(submission);
-    const saved = await this.repository.save(entity);
+    const saved = await this.repo.save(entity);
     return this.toDomain(saved);
   }
 
   async findById(id: string): Promise<SurveySubmission | null> {
-    const entity = await this.repository.findOne({
+    const entity = await this.repo.findOne({
       where: { id },
       relations: ["answers"],
     });
@@ -30,12 +31,12 @@ export class TypeOrmSubmissionRepository implements ISubmissionRepository {
   }
 
   async findAll(): Promise<SurveySubmission[]> {
-    const entities = await this.repository.find({ relations: ["answers"] });
+    const entities = await this.repo.find({ relations: ["answers"] });
     return entities.map((e) => this.toDomain(e));
   }
 
   async findAllBySurveyId(surveyId: string): Promise<SurveySubmission[]> {
-    const entities = await this.repository.find({
+    const entities = await this.repo.find({
       where: { surveyId },
       relations: ["answers"],
     });
@@ -43,11 +44,11 @@ export class TypeOrmSubmissionRepository implements ISubmissionRepository {
   }
 
   async delete(id: string): Promise<void> {
-    await this.repository.delete(id);
+    await this.repo.delete(id);
   }
 
   async exist(id: string): Promise<boolean> {
-    const count = await this.repository.countBy({ id });
+    const count = await this.repo.countBy({ id });
     return count > 0;
   }
 

@@ -8,16 +8,11 @@ import {
   SurveySubmissionEntity,
   SurveyAnswerEntity,
 } from "../../infrastructure/database/entities/submission.entity";
-import { AuthModule } from "../auth/auth.module";
-import { SurveysModule } from "../surveys/surveys.module"; // Import SurveysModule to access ISurveyRepository? No, Repository is usually internal.
-// Wait, SubmitSurveyUseCase needs ISurveyRepository.
-// I should export TypeOrmSurveyRepository OR ISurveyRepository provider from SurveysModule.
-// Better: SurveysModule exports the Provider for ISurveyRepository.
+import { SurveysModule } from "../surveys/surveys.module";
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([SurveySubmissionEntity, SurveyAnswerEntity]),
-    AuthModule,
     SurveysModule,
   ],
   controllers: [SubmissionsController],

@@ -79,7 +79,7 @@ async function bootstrap() {
 
   if (nodeEnv === "development") {
     const swaggerConfig = new DocumentBuilder()
-      .setTitle("Real Estate Chatbot API")
+      .setTitle("Survey Backend API")
       .setVersion("1.0")
       .build();
     const document = SwaggerModule.createDocument(app, swaggerConfig);

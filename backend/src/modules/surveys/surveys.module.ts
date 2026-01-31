@@ -9,7 +9,6 @@ import {
   SurveyFieldEntity,
   SurveyFieldOptionEntity,
 } from "../../infrastructure/database/entities/survey.entity";
-import { AuthModule } from "../auth/auth.module"; // Import AuthModule for Guards
 
 @Module({
   imports: [
@@ -18,7 +17,6 @@ import { AuthModule } from "../auth/auth.module"; // Import AuthModule for Guard
       SurveyFieldEntity,
       SurveyFieldOptionEntity,
     ]),
-    AuthModule,
   ],
   controllers: [SurveysController],
   providers: [

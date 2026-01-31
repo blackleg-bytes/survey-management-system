@@ -4,7 +4,7 @@ import {
   Column,
   CreateDateColumn,
 } from "typeorm";
-import { UserRole } from "../../../modules/auth/domain/user.model";
+import { UserRole } from "../../../modules/users/domain/user.model";
 
 @Entity("users")
 export class UserEntity {

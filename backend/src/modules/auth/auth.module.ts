@@ -1,17 +1,16 @@
 import { Module } from "@nestjs/common";
 import { JwtModule } from "@nestjs/jwt";
 import { ConfigModule, ConfigService } from "@nestjs/config";
-import { TypeOrmModule } from "@nestjs/typeorm";
 import { AuthController } from "./presentation/controllers/auth.controller";
 import { LoginUseCase } from "./application/use-cases/login.use-case";
-import { TypeOrmUserRepository } from "./infrastructure/repositories/user.repository";
 import { JwtTokenServiceImpl } from "./infrastructure/jwt-token.service";
-import { UserEntity } from "../../infrastructure/database/entities/user.entity";
+import { UsersModule } from "../users/users.module";
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([UserEntity]),
+    UsersModule,
     JwtModule.registerAsync({
+      global: true,
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
         secret: configService.get<string>("JWT_SECRET") || "secret",
@@ -23,10 +22,6 @@ import { UserEntity } from "../../infrastructure/database/entities/user.entity";
   controllers: [AuthController],
   providers: [
     LoginUseCase,
-    {
-      provide: "IUserRepository",
-      useClass: TypeOrmUserRepository,
-    },
     {
       provide: "ITokenService",
       useClass: JwtTokenServiceImpl,

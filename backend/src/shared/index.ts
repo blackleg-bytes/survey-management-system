@@ -10,3 +10,4 @@ export * from './pipes';
 export * from './services';
 export * from './utils';
 export * from './errors';
+export * from './shared.module';

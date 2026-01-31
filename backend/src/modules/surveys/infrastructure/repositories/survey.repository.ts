@@ -1,5 +1,4 @@
 import { Injectable } from "@nestjs/common";
-import { DataSource, Repository } from "typeorm";
 import { ISurveyRepository } from "../../application/interfaces";
 import { Survey, SurveyField } from "../../domain/survey.model";
 import {
@@ -8,22 +7,24 @@ import {
   SurveyFieldOptionEntity,
 } from "../../../../infrastructure/database/entities/survey.entity";
 
+import { TransactionManagerService } from "@shared/services";
+
 @Injectable()
 export class TypeOrmSurveyRepository implements ISurveyRepository {
-  private readonly repository: Repository<SurveyEntity>;
+  constructor(private readonly txManager: TransactionManagerService) {}
 
-  constructor(private readonly dataSource: DataSource) {
-    this.repository = this.dataSource.getRepository(SurveyEntity);
+  private get repo() {
+    return this.txManager.getManager().getRepository(SurveyEntity);
   }
 
   async save(survey: Survey): Promise<Survey> {
     const entity = this.toPersistence(survey);
-    const saved = await this.repository.save(entity);
+    const saved = await this.repo.save(entity);
     return this.toDomain(saved);
   }
 
   async findById(id: string): Promise<Survey | null> {
-    const entity = await this.repository.findOne({
+    const entity = await this.repo.findOne({
       where: { id },
       relations: ["fields", "fields.options"],
     });
@@ -35,30 +36,30 @@ export class TypeOrmSurveyRepository implements ISurveyRepository {
   }
 
   async findAll(): Promise<Survey[]> {
-    const entities = await this.repository.find();
+    const entities = await this.repo.find();
     return entities.map((e) => this.toDomain(e));
   }
 
   async findAllByCreator(creatorId: string): Promise<Survey[]> {
-    const entities = await this.repository.find({
+    const entities = await this.repo.find({
       where: { createdBy: creatorId },
     });
     return entities.map((e) => this.toDomain(e));
   }
 
   async findPublished(): Promise<Survey[]> {
-    const entities = await this.repository.find({
+    const entities = await this.repo.find({
       where: { isPublished: true },
     });
     return entities.map((e) => this.toDomain(e));
   }
 
   async delete(id: string): Promise<void> {
-    await this.repository.delete(id);
+    await this.repo.delete(id);
   }
 
   async exist(id: string): Promise<boolean> {
-    const count = await this.repository.countBy({ id });
+    const count = await this.repo.countBy({ id });
     return count > 0;
   }
 
